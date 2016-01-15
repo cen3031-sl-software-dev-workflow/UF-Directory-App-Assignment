@@ -1,24 +1,44 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link href='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.css' rel='stylesheet' />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:700' rel='stylesheet' type='text/css'>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=yes' />
   </head>
   <body ng-app="directoryApp">
-    <div class="container">
+    <div class="container" id="background">
       <div class="row">
-        <h1>UF Directory App</h1>
+        <h1 style="font-size:75px">UF</h1><h1 style="display:inline">Directory App</h1>
       </div>
       <div class="row" ng-controller="ListingsController">
-        <div class="col-md-6">
+
+        <div class="col-md-3">
+        <!--Use a form to add a new listing with code, name, coordinates, and address attributes (it will reset after the Add button is pressed). -->
+          <div class="addTableWrapper">
+            <form name="newListing">
+              <h3>Add New Listing</h3>
+              <div class="col-md-8">
+                <p>Code<br><input type="code" name="code" size="20" ng-model="newCode" class="form-control"></p>
+                <p>Name<br><input type="name" name="name" size="20" ng-model="newName" class="form-control"></p>
+                <p>Coordinates<br><input type="coordinates" name="coordinates" placeholder="Latitude" size="20" ng-model="newCoordinateX" class="form-control"><br>
+                <input type="coordinates" name="coordinates" placeholder="Longitude" size="20" ng-model="newCoordinateY" class="form-control"></p>
+                <p>Address<br><input type="address" name="address" size="20" ng-model="newAddress" class="form-control"></p>
+                <button ng-click="addListing()" id="addButton" class="btn btn-default">Add</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="col-md-9">
           <div class="input-group" id="searchBar">
-            <!-- 
-
-                Implement a way to filter through listings using the search bar 
-
-              -->
             <span class="input-group-addon" id="sizing-addon1"><span class="glyphicon glyphicon-search"></span></span>
-            <input type="text" class="form-control" placeholder="Search">
+
+            <!--Add ng-model keyword to search bar and also update filter on the ng-repeat table-->
+
+            <input type="text" ng-model="search" class="form-control" placeholder="Search">
           </div>
           <div class="tableWrapper">
             <table class="table table-striped table-hover">
@@ -27,32 +47,39 @@
                 <th>Building Name</th>
                 <th></th>
               </tr>
-              <!-- 
 
-                  Fill in the rest of the table:
-                      * populate the rows with the code and name of each listing
-                      * include a way to remove individual listings
+              <!--Use ng-repeat to display all entries (code and name) in listings and also use filter for the search bar at the top. X button is used to delete a listing and the Show Details button is used to show details to the side of the screen. -->
 
-                --> 
+              <tr id="t-rows" ng-repeat="entries in listings | filter: search" ng-click="showDetails($index)">
+                <td>{{ entries.code }}</td>
+                <td>{{ entries.name }}</td>
+                <td><button ng-click="deleteListing($index)" class="btn btn-default">x</button></td>
+              </tr>
+              
             </table>
           </div>
-          <!-- 
 
-              Write an HTML form that adds new listings to the directory 
-
-            -->
+          <br></br>
         </div>
-        <div class="col-md-6">
-          <div class="jumbotron">
-            <h2>Detailed Information</h2>
-            <!-- 
 
-              Include a way to display detailed information about an individual listing:
-                   * consider how to use ng-click within the the table to implement this feature
+        <div class="col-md-12">
+          <div class="detailsTableWrapper" ng-model="codeName">
+            
+            <h2>{{ codeName }}</h2>
 
-             -->
+            <!--When the showDetails() method is called from the button next to the entry, the detailedInfo will be updated in the controller; this is just shown in this column area. -->
+              <div style="text-align:center">
+                <h4>{{ detailedInfo }}</h4>
+                <div class="map" id="map">
+              </div>
+            </div>
           </div>
+          <br></br>
+        
+
+        
         </div>
+
       </div>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
@@ -61,5 +88,7 @@
     <script src="app.js"></script>
     <script src="listingController.js"></script>
     <script src="listingFactory.js"></script>
+    <script src='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   </body>
 </html>
